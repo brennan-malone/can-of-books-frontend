@@ -53,14 +53,14 @@ be willing to work with eachother and understand that not everyone is at the sam
 Time Estimates
 For each of the lab features, make an estimate of the time it will take you to complete the feature, and record your start and finish times for that feature:
 
-Name of feature: ________________________________
+Name of feature: Books renders to page
 
-Estimate of time needed to complete: _____
+Estimate of time needed to complete: 2 hrs
 
-Start time: _____
+Start time:  1600 EST
 
-Finish time: _____
+Finish time: 2045
 
-Actual time needed to complete: _____
+Actual time needed to complete: 4:45hrs
 
 --------------------------------------------------------------------------------------------------------------------------------------------------------------
