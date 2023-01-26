@@ -1,24 +1,25 @@
 import React from 'react';
 import { Button, Form, Container, Modal } from 'react-bootstrap';
 
-class AddBookModal extends React.Component {
-
-  handleBookSubmit = (event) => {
+class UpdateBookModal extends React.Component {
+  
+  handleBookUpdate = (event) => {
     event.preventDefault();
-    this.props.onHide()
+    this.props.onHide();
 
-    let bookObj = {
+    let bookToUpdate = {
       title: event.target.title.value,
       description: event.target.description.value,
-      status: event.target.status.checked
+      status: event.target.status.checked,
+      _id: this.props.book._id,
+      __v: this.props.book.__v
     }
-    this.props.handlePostBook(bookObj)
+    this.props.updateBook(bookToUpdate)
   }
   render() {
-    console.log(this.props.onHide)
     return (
-        <Modal
-        show={this.props.isOpen}
+      <Modal
+        show={this.props.isUpdateOpen}
         onHide={this.props.onHide}
       >
         <Modal.Header closeButton>
@@ -26,19 +27,19 @@ class AddBookModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Container>
-            <Form onSubmit={this.handleBookSubmit}>
+            <Form onSubmit={this.handleBookUpdate}>
               <Form.Group controlId='title'>
                 <Form.Label>Title</Form.Label>
-                <Form.Control type='text' />
+                <Form.Control defaultValue={this.props.book.title} type='text' />
               </Form.Group>
               <Form.Group controlId='description'>
                 <Form.Label>description</Form.Label>
-                <Form.Control type='text' />
+                <Form.Control defaultValue={this.props.book.description} type='text' />
               </Form.Group>
               <Form.Group controlId='status'>
-                <Form.Check type='checkbox' label='status' />
+                <Form.Check defaultChecked={this.props.book.status} type='checkbox' label='status' />
               </Form.Group>
-              <Button variant='outline-primary' type='submit'>Add this Book</Button>
+              <Button variant='info' type='submit'>Update This Book</Button>
             </Form>
           </Container>
         </Modal.Body>
@@ -52,4 +53,4 @@ class AddBookModal extends React.Component {
   }
 }
 
-export default AddBookModal;
+export default UpdateBookModal;

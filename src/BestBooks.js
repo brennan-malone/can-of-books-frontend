@@ -2,6 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import { Button, Carousel } from 'react-bootstrap';
 import AddBookModal from './AddBookModal';
+import UpdateBookModal from './UpdateBookModal.js';
 import bookImage from './assets/books.jpg'
 
 class BestBooks extends React.Component {
@@ -10,6 +11,7 @@ class BestBooks extends React.Component {
     this.state = {
       books: [],
       isOpen: false,
+      isUpdateOpen: false
     }
   }
   getBooks = async () => {
@@ -37,16 +39,24 @@ class BestBooks extends React.Component {
     })
   }
 
-  handleBookSubmit = (event) => {
-    event.preventDefault();
+  updateBook = async (bookToUpdate) => {
 
-    let newBook = {
-      title: event.target.title.value,
-      description: event.target.description.value,
-      status: event.target.status.checked
+    try {
+      let url = `${process.env.REACT_APP_SERVER}/books/${bookToUpdate._id}`
+      let updatedBook = await axios.put(url, bookToUpdate)
+
+      let updatedBookArray = this.state.books.map(existingBook => {
+        return existingBook._id === bookToUpdate._id
+          ? updatedBook.data
+          : existingBook
+      });
+
+      this.setState({
+        books: updatedBookArray
+      })
+    } catch (error) {
+      console.log(error.message);
     }
-
-    this.handlePostBook(newBook)
   }
 
   handlePostBook = async (bookObj) => {
@@ -66,50 +76,64 @@ class BestBooks extends React.Component {
 
   openModal = () => this.setState({ isOpen: true });
   closeModal = () => this.setState({ isOpen: false });
+  openUpdateModal = () => this.setState({ isUpdateOpen: true });
+  closeUpdateModal = () => this.setState({ isUpdateOpen: false });
 
   componentDidMount() {
     this.getBooks()
   }
 
   render() {
-
+    console.log(this.state.closeModal)
 
     return (
       <>
         <h2>My Essential Lifelong Learning &amp; Formation Shelf</h2>
 
         {this.state.books.length ? (
-            <Carousel slide={false}>
-              {this.state.books.map((book, index) => {
-                return (
-                  <Carousel.Item key={index} style={{ textAlign: 'center' }}>
-                    <img style={{ width: '50%', height: '50%'}} src={bookImage} alt='book'/>
+          <Carousel slide={false}>
+            {this.state.books.map((book, index) => {
+              return (
+                <Carousel.Item key={index} style={{ textAlign: 'center' }}>
+                  <img style={{ width: '50%', height: '50%' }} src={bookImage} alt='book' />
 
-                    <Carousel.Caption>
-                      <p>{book.title}</p>
-                      <p>{book.description}</p>
-                      {book.status ? (
-                        <p>The book is available</p>
-                      ) : (
-                        <p>Book is not available</p>
-                      )}
-                    </Carousel.Caption>
-                    <Carousel.Caption>
-                      <Button style={{ alignItems: 'center' }} onClick={() => this.deleteBooks(book)}>Delete</Button>
-                    </Carousel.Caption>
-                  </Carousel.Item>
-                )
-              })}
-            </Carousel>
+                  <Carousel.Caption>
+                    <p>{book.title}</p>
+                    <p>{book.description}</p>
+                    {book.status ? (
+                      <p>The book is available</p>
+                    ) : (
+                      <p>Book is not available</p>
+                    )}
+                  </Carousel.Caption>
+                  <Carousel.Caption>
+                    <Button style={{ alignItems: 'center' }} variant='warning' onClick={() => this.deleteBooks(book)}>Delete</Button>
+                    <Button onClick={this.openUpdateModal} variant='info'>Update</Button>
+
+                    <UpdateBookModal
+                      openUpdateModal={this.openUpdateModal}
+                      onHide={this.closeUpdateModal}
+                      isUpdateOpen={this.state.isUpdateOpen}
+                      updateBook={this.updateBook}
+                      book={book}
+                    />
+
+                  </Carousel.Caption>
+                </Carousel.Item>
+              )
+            })}
+          </Carousel>
         ) : (
           <h3>No Books Found</h3>
         )}
+
         <Button onClick={this.openModal}>Add a Book</Button>
         {this.state.isOpen && (
           <AddBookModal
             openModal={this.openModal}
             onHide={this.closeModal}
             isOpen={this.state.isOpen}
+            handlePostBook={this.handlePostBook}
           />
         )}
       </>
